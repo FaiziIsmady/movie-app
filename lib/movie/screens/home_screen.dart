@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+import '../models/movie.dart';
+import '../services/movie_service.dart';
+import '../widgets/movie_card.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final MovieService _movieService = MovieService();
+  List<Movie> _popularMovies = [];
+  List<Movie> _trendingMovies = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMovies();
+  }
+
+  Future<void> _loadMovies() async {
+    try {
+      final popular = await _movieService.getPopularMovies();
+      final trending = await _movieService.getTrendingMovies();
+      setState(() {
+        _popularMovies = popular;
+        _trendingMovies = trending;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading movies: $e')),
+        );
+      }
+    }
+  }
+
+  Widget _buildMovieSection(String title, List<Movie> movies) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 300,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: movies.length,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemBuilder: (context, index) {
+              return SizedBox(
+                width: 180,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: MovieCard(
+                    movie: movies[index],
+                    onTap: () {
+                      // We'll implement navigation to detail screen later
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Movie App'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              // We'll implement navigation to about screen later
+            },
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadMovies,
+              child: ListView(
+                children: [
+                  _buildMovieSection('Popular Movies', _popularMovies),
+                  const SizedBox(height: 16),
+                  _buildMovieSection('Trending This Week', _trendingMovies),
+                ],
+              ),
+            ),
+    );
+  }
+}
