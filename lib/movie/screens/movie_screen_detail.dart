@@ -1,14 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:movie_app/movie/screens/movie_cast.dart';
 import '../models/movie.dart';
+import '../services/movie_service.dart';
 import '../../api_constants.dart';
 
-class MovieDetailScreen extends StatelessWidget {
+class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
 
-  const MovieDetailScreen({
-    Key? key,
-    required this.movie,
-  }) : super(key: key);
+  const MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
+
+  @override
+  _MovieDetailScreenState createState() => _MovieDetailScreenState();
+}
+
+class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  final MovieService _movieService = MovieService();
+  List _credits = [];
+  List _recommendations = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMovieDetails();
+  }
+
+  Future _loadMovieDetails() async {
+    try {
+      _credits = await _movieService.getMovieCredits(widget.movie.id);
+      _recommendations = await _movieService.getMovieRecommendations(widget.movie.id);
+    } catch (e) {
+      // Handle error
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +48,7 @@ class MovieDetailScreen extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                '${ApiConstants.imageBaseUrl}${movie.backdropPath}',
+                '${ApiConstants.imageBaseUrl}${widget.movie.backdropPath}',
                 fit: BoxFit.cover,
               ),
             ),
@@ -32,7 +60,7 @@ class MovieDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    movie.title,
+                    widget.movie.title,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -44,7 +72,7 @@ class MovieDetailScreen extends StatelessWidget {
                       const Icon(Icons.star, color: Colors.amber),
                       const SizedBox(width: 4),
                       Text(
-                        movie.voteAverage.toStringAsFixed(1),
+                        widget.movie.voteAverage.toStringAsFixed(1),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -52,7 +80,7 @@ class MovieDetailScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 16),
                       Text(
-                        'Release Date: ${movie.releaseDate}',
+                        'Release Date: ${widget.movie.releaseDate}',
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
@@ -67,9 +95,71 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    movie.overview,
+                    widget.movie.overview,
                     style: const TextStyle(fontSize: 16),
                   ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieCastScreen(movieId: widget.movie.id),
+                            ),
+                          );
+                        },
+                        child: const Text('Cast'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Navigate to trailer
+                        },
+                        child: const Text('Trailer'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Movies Like This',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : SizedBox(
+                          height: 180,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _recommendations.length,
+                            itemBuilder: (context, index) {
+                              final recommendedMovie = _recommendations[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  // Navigate to recommended movie details
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        '${ApiConstants.imageBaseUrl}${recommendedMovie.posterPath}',
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                 ],
               ),
             ),

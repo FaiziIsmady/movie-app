@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Movie App'),
+        title: const Text('ReelsTek'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
