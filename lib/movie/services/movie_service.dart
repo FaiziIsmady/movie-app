@@ -63,4 +63,71 @@ class MovieService {
       throw Exception('Failed to load top rated movies');
     }
   }
+
+  Future<Movie> getMovieDetails(int movieId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/movie/$movieId?api_key=${ApiConstants.apiKey}'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return Movie.fromJson(data);
+    } else {
+      throw Exception('Failed to load movie details');
+    }
+  }
+
+  Future<List<dynamic>> getMovieCredits(int movieId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/movie/$movieId/credits?api_key=${ApiConstants.apiKey}'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data['cast']; // Return the cast list
+    } else {
+      throw Exception('Failed to load movie credits');
+    }
+  }
+
+  Future<List<Movie>> getMovieRecommendations(int movieId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/movie/$movieId/recommendations?api_key=${ApiConstants.apiKey}'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return (data['results'] as List)
+          .map((movieData) => Movie.fromJson(movieData))
+          .toList();
+    } else {
+      throw Exception('Failed to load movie recommendations');
+    }
+  }
+
+  Future<List<dynamic>> getMovieReviews(int movieId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/movie/$movieId/reviews?api_key=${ApiConstants.apiKey}'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data['results']; // Return the reviews list
+    } else {
+      throw Exception('Failed to load movie reviews');
+    }
+  }
+
+  Future<List<dynamic>> getMovieVideos(int movieId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/movie/$movieId/videos?api_key=${ApiConstants.apiKey}'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data['results']; // Return the videos list
+    } else {
+      throw Exception('Failed to load movie videos');
+    }
+  }
 }
