@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'movie/widgets/bottom_nav_bar.dart';
 import 'movie/screens/home_screen.dart';
@@ -10,6 +11,7 @@ import 'profile/screens/profile_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(const MyApp());
 }
 

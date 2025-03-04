@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "438782047284",
+    "project_id": "reelstek",
+    "storage_bucket": "reelstek.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438782047284:android:ab8c7aea3e018fd9fa4661",
+        "android_client_info": {
+          "package_name": "com.reelstek.cinema"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhtDT9dMxe76K9navF6kGy2eJrS8J_f5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
