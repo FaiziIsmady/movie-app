@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:438782047284:android:fce0dc2ad8c2e1b3fa4661",
+        "android_client_info": {
+          "package_name": "com.example.movie_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhtDT9dMxe76K9navF6kGy2eJrS8J_f5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:438782047284:android:ab8c7aea3e018fd9fa4661",
         "android_client_info": {
           "package_name": "com.reelstek.cinema"
