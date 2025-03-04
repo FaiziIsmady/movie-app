@@ -14,6 +14,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final MovieService _movieService = MovieService();
   List<Movie> _popularMovies = [];
   List<Movie> _trendingMovies = [];
+  List<Movie> _nowPlayingMovies = [];
+  List<Movie> _topRatedMovies = [];
   bool _isLoading = true;
 
   @override
@@ -26,9 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final popular = await _movieService.getPopularMovies();
       final trending = await _movieService.getTrendingMovies();
+      final nowPlaying = await _movieService.getNowPlayingMovies();
+      final topRated = await _movieService.getTopRatedMovies();
+
       setState(() {
         _popularMovies = popular;
         _trendingMovies = trending;
+        _nowPlayingMovies = nowPlaying;
+        _topRatedMovies = topRated;
         _isLoading = false;
       });
     } catch (e) {
@@ -71,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: MovieCard(
                     movie: movies[index],
                     onTap: () {
-                      // We'll implement navigation to detail screen later
                     },
                   ),
                 ),
@@ -92,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              // We'll implement navigation to about screen later
             },
           ),
         ],
@@ -106,6 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildMovieSection('Popular Movies', _popularMovies),
                   const SizedBox(height: 16),
                   _buildMovieSection('Trending This Week', _trendingMovies),
+                  const SizedBox(height: 16),
+                  _buildMovieSection('Now Playing', _nowPlayingMovies),
+                  const SizedBox(height: 16),
+                  _buildMovieSection('Top Rated', _topRatedMovies),
                 ],
               ),
             ),
