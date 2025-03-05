@@ -1,1 +1,38 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"reelstek","appId":"1:438782047284:android:fce0dc2ad8c2e1b3fa4661","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"reelstek","configurations":{"android":"1:438782047284:android:fce0dc2ad8c2e1b3fa4661","ios":"1:438782047284:ios:d1f778b9bb9f6434fa4661","macos":"1:438782047284:ios:d1f778b9bb9f6434fa4661","web":"1:438782047284:web:1322a75bfdb28073fa4661","windows":"1:438782047284:web:2333fea9e40bf15dfa4661"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "reelstek",
+          "appId": "1:438782047284:android:fce0dc2ad8c2e1b3fa4661",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "reelstek",
+          "configurations": {
+            "android": "1:438782047284:android:fce0dc2ad8c2e1b3fa4661",
+            "ios": "1:438782047284:ios:d1f778b9bb9f6434fa4661",
+            "macos": "1:438782047284:ios:d1f778b9bb9f6434fa4661",
+            "web": "1:438782047284:web:1322a75bfdb28073fa4661",
+            "windows": "1:438782047284:web:2333fea9e40bf15dfa4661"
+          }
+        }
+      }
+    }
+  },
+  "emulators": {
+    "singleProjectMode": true,
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
+  }
+}
