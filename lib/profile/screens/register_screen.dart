@@ -40,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _errorMessage = 'Failed to create account. Email might be already in use.';
         });
       }
-      // No need to navigate - main.dart handles this via auth state
+      // main.dart handles via auth state
     } catch (e) {
       if (mounted) {
         setState(() {

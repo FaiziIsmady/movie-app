@@ -16,12 +16,4 @@ class UserProfile {
     this.socialMedia = '',
     this.aboutMe = '',
   });
-
-  bool hasData() {
-    return name.isNotEmpty || 
-           nickname.isNotEmpty || 
-           hobbies.isNotEmpty || 
-           socialMedia.isNotEmpty ||
-           aboutMe.isNotEmpty;
-  }
 }
