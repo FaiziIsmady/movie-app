@@ -6,8 +6,8 @@ import 'firebase_options.dart';
 
 import 'movie/widgets/bottom_nav_bar.dart';
 import 'movie/screens/home_screen.dart';
-import 'explore/screens/search_screen.dart';
-import 'social/screens/friend_activity_screen.dart'; 
+import 'explore/screens/explore_screen.dart';
+import 'social/screens/social_screen.dart'; 
 import 'profile/screens/profile_screen.dart';
 import 'profile/screens/login_screen.dart';
 

@@ -3,6 +3,7 @@ import 'package:movie_app/movie/screens/movie_cast.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../../api_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -15,9 +16,11 @@ class MovieDetailScreen extends StatefulWidget {
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final MovieService _movieService = MovieService();
-  List _credits = [];
+
   List _recommendations = [];
+  List _videos = [];
   bool _isLoading = true;
+  String? _director;
 
   @override
   void initState() {
@@ -27,15 +30,38 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   Future _loadMovieDetails() async {
     try {
-      _credits = await _movieService.getMovieCredits(widget.movie.id);
-      _recommendations = await _movieService.getMovieRecommendations(widget.movie.id);
-    } catch (e) {
-      // Handle error
-    } finally {
+      final recommendationsData = _movieService.getMovieRecommendations(widget.movie.id);
+      final videosData = _movieService.getMovieVideos(widget.movie.id);
+      final directorData = _movieService.getMovieDirector(widget.movie.id);
+
+      final results = await Future.wait([recommendationsData, videosData, directorData]);
+
       setState(() {
+        _recommendations = results[0] as List;
+        _videos = results[1] as List;
+        _director = results[2] as String?;
         _isLoading = false;
       });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading movie details: $e')),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  String? _getTrailerKey() {
+    for (var video in _videos) {
+      if (video['site'] == 'YouTube' && 
+          (video['type'] == 'Trailer' || video['type'] == 'Teaser')) {
+        return video['key'];
+      }
+    }
+    return null;
   }
 
   @override
@@ -83,6 +109,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         'Release Date: ${widget.movie.releaseDate}',
                         style: const TextStyle(fontSize: 16),
                       ),
+                      Text(
+                        'Director: $_director',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -114,8 +147,28 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         child: const Text('Cast'),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          // Navigate to trailer
+                        onPressed: () async {
+                          final trailerKey = _getTrailerKey();
+                          if (trailerKey != null) {
+                            final youtubeUrl = Uri.parse('https://www.youtube.com/watch?v=$trailerKey');
+                            if (await canLaunchUrl(youtubeUrl)) {
+                              await launchUrl(youtubeUrl, mode: LaunchMode.externalApplication);
+                            } else {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Could not launch YouTube'),
+                                  ),
+                                );
+                              }
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('No trailer available for this movie'),
+                              ),
+                            );
+                          }
                         },
                         child: const Text('Trailer'),
                       ),
@@ -141,7 +194,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                               final recommendedMovie = _recommendations[index];
                               return GestureDetector(
                                 onTap: () {
-                                  // Navigate to recommended movie details
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MovieDetailScreen(movie: recommendedMovie),
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 8),

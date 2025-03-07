@@ -130,4 +130,25 @@ class MovieService {
       throw Exception('Failed to load movie videos');
     }
   }
+
+  Future<String?> getMovieDirector(int movieId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/movie/$movieId/credits?api_key=${ApiConstants.apiKey}'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      
+      // Find the director in the crew list
+      final director = (data['crew'] as List)
+          .firstWhere(
+            (crewMember) => crewMember['job'] == 'Director',
+            orElse: () => null,
+          );
+
+      return director?['name']; // Return director's name if found
+    } else {
+      throw Exception('Failed to load movie director');
+    }
+  }
 }
