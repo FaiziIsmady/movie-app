@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/movie.dart';
-import '/api_constants.dart';
+import 'package:movie_app/api_constants.dart';
+import 'package:movie_app/movie/models/movie.dart';
+
 
 class MovieService {
   Future<List<Movie>> getPopularMovies() async {

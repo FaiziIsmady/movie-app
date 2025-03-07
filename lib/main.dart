@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:movie_app/widgets/bottom_nav_bar.dart';
 import 'firebase_options.dart';
 
-import 'movie/widgets/bottom_nav_bar.dart';
+
 import 'movie/screens/home_screen.dart';
 import 'explore/screens/explore_screen.dart';
 import 'social/screens/social_screen.dart'; 

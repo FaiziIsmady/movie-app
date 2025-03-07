@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../services/movie_service.dart';
-import '../models/movie.dart';
-import '../../api_constants.dart';
+import 'package:movie_app/api_constants.dart';
+import 'package:movie_app/movie/services/movie_service.dart';
+import 'package:movie_app/widgets/app_scaffold.dart';
 
 class MovieCastScreen extends StatefulWidget {
   final int movieId;
@@ -45,8 +45,10 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cast')),
+    return AppScaffold(
+      title: 'Cast',
+      showBackButton: true,
+      currentIndex: 0, // 0 for Movies tab
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _cast.isEmpty
