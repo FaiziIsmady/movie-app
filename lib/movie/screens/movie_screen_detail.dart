@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/api_constants.dart';
 import 'package:movie_app/movie/models/movie.dart';
-import 'package:movie_app/movie/screens/movie_cast.dart';
 import 'package:movie_app/movie/services/movie_service.dart';
 import 'package:movie_app/utils/navigation_manager.dart';
 import 'package:movie_app/widgets/app_scaffold.dart';
