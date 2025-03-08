@@ -85,7 +85,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             // Add this flexibleSpace property here
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
+                'https://image.tmdb.org/t/p/w500${widget.movie.backdropPath}',
                 fit: BoxFit.cover,
               ),
             ),

@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:movie_app/profile/models/user_profile.dart';
 import 'package:movie_app/profile/services/auth_service.dart';
 import 'package:movie_app/profile/services/profile_service.dart';
@@ -16,11 +20,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileService _profileService = ProfileService();
-  final AuthService _authService = AuthService(); // Add AuthService
+  final AuthService _authService = AuthService();
+  final ImagePicker _picker = ImagePicker();
   UserProfile? _userProfile;
   bool _isLoading = true;
   bool _isEditing = false;
+  bool _isUploading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  Uint8List? _image;
   
   // Controllers for editing
   final TextEditingController _nameController = TextEditingController();
@@ -50,11 +57,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _nicknameController.text = _userProfile?.nickname ?? '';
       _hobbiesController.text = _userProfile?.hobbies ?? '';
       _socialMediaController.text = _userProfile?.socialMedia ?? '';
-      _aboutMeController.text = _userProfile?.aboutMe ?? ''; // Initialize About Me controller
+      _aboutMeController.text = _userProfile?.aboutMe ?? '';
       
     } catch (e) {
-      print('Error loading profile: $e'); // For debugging
-      // Handle error
+      print('Error loading profile: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -64,10 +70,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _userProfile!.nickname.isEmpty &&
             _userProfile!.hobbies.isEmpty &&
             _userProfile!.socialMedia.isEmpty &&
-            _userProfile!.aboutMe.isEmpty) { // Include aboutMe in check
+            _userProfile!.aboutMe.isEmpty) {
           _isEditing = true;
         }
       });
+    }
+  }
+  
+  Future<void> selectImage() async {
+    try {
+      final XFile? pickedImage = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      
+      if (pickedImage != null) {
+        final bytes = await pickedImage.readAsBytes();
+        setState(() {
+          _image = bytes;
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error selecting image: $e')),
+      );
     }
   }
   
@@ -82,25 +111,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     
     try {
-      final updatedProfile = UserProfile(
+      String imageUrl = _userProfile!.profilePictureUrl; // Keep existing image
+      if (_image != null) {
+        imageUrl = await _profileService.uploadImage(_image!, user.uid); // Upload new image
+      }
+
+      var updatedProfile = UserProfile(
         name: _nameController.text,
         email: _userProfile!.email,
-        profilePictureUrl: _userProfile!.profilePictureUrl,
+        profilePictureUrl: imageUrl,
         nickname: _nicknameController.text,
         hobbies: _hobbiesController.text,
         socialMedia: _socialMediaController.text,
-        aboutMe: _aboutMeController.text, // Include About Me field
+        aboutMe: _aboutMeController.text,
       );
       
       await _profileService.updateUserProfile(updatedProfile, user.uid);
+      
+      // If we uploaded a new image, we need to get the actual image data for display
+      if (_image != null) {
+        final imageData = await _profileService.getProfileImageFromFirestore(user.uid);
+        if (imageData != null) {
+          updatedProfile = UserProfile(
+            name: updatedProfile.name,
+            email: updatedProfile.email,
+            profilePictureUrl: imageData,
+            nickname: updatedProfile.nickname,
+            hobbies: updatedProfile.hobbies,
+            socialMedia: updatedProfile.socialMedia,
+            aboutMe: updatedProfile.aboutMe,
+          );
+        }
+      }
+      
       _userProfile = updatedProfile;
       
       setState(() {
         _isEditing = false;
+        _image = null; // Clear the selected image
       });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully')),
+      );
     } catch (e) {
-      // Handle error
       print('Error saving profile: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving profile: $e')),
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -108,7 +166,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
   
-  // Add logout method
   Future<void> _logout() async {
     try {
       await _authService.signOut();
@@ -136,7 +193,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               });
             },
           ),
-        // Add logout button
         IconButton(
           icon: const Icon(Icons.logout),
           onPressed: _logout,
@@ -168,9 +224,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Profile picture
           CircleAvatar(
             radius: 60,
-            backgroundImage: _userProfile!.profilePictureUrl.isNotEmpty
-                ? NetworkImage(_userProfile!.profilePictureUrl)
-                : null,
+            backgroundImage: _userProfile!.profilePictureUrl.isNotEmpty && 
+                            _userProfile!.profilePictureUrl.startsWith('data:image')
+                ? MemoryImage(base64Decode(_userProfile!.profilePictureUrl.split(',')[1]))
+                : _userProfile!.profilePictureUrl.isNotEmpty
+                    ? NetworkImage(_userProfile!.profilePictureUrl) as ImageProvider
+                    : null,
             child: _userProfile!.profilePictureUrl.isEmpty
                 ? const Icon(Icons.person, size: 60)
                 : null,
@@ -259,16 +318,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Profile picture (placeholder for now)
+          // Profile picture with edit button
           Center(
-            child: CircleAvatar(
-              radius: 60,
-              backgroundImage: _userProfile!.profilePictureUrl.isNotEmpty
-                  ? NetworkImage(_userProfile!.profilePictureUrl)
-                  : null,
-              child: _userProfile!.profilePictureUrl.isEmpty
-                  ? const Icon(Icons.person, size: 60)
-                  : null,
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 60,
+                  backgroundImage: _image != null 
+                    ? MemoryImage(_image!) 
+                    : (_userProfile!.profilePictureUrl.isNotEmpty && 
+                       _userProfile!.profilePictureUrl.startsWith('data:image')
+                        ? MemoryImage(base64Decode(_userProfile!.profilePictureUrl.split(',')[1]))
+                        : _userProfile!.profilePictureUrl.isNotEmpty
+                            ? NetworkImage(_userProfile!.profilePictureUrl) as ImageProvider
+                            : null),
+                  child: (_image == null && _userProfile!.profilePictureUrl.isEmpty)
+                      ? const Icon(Icons.person, size: 60)
+                      : null,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: _isUploading ? null : selectImage,
+                      icon: _isUploading 
+                          ? const SizedBox(
+                              width: 20, 
+                              height: 20, 
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.camera_alt, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -325,15 +416,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           
           // Save button
           ElevatedButton(
-            onPressed: _saveProfile,
-            child: const Text('Save Profile'),
+            onPressed: _isLoading ? null : _saveProfile,
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text('Save Profile'),
           ),
           
           if (!_userProfile!.name.isEmpty && !_userProfile!.nickname.isEmpty)
             TextButton(
-              onPressed: () {
+              onPressed: _isLoading ? null : () {
                 setState(() {
                   _isEditing = false;
+                  _image = null; // Clear the selected image
                 });
               },
               child: const Text('Cancel'),
