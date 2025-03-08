@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../services/movie_service.dart';
-import '../models/movie.dart';
-import '../../api_constants.dart';
+import 'package:movie_app/api_constants.dart';
+import 'package:movie_app/movie/services/movie_service.dart';
+import 'package:movie_app/utils/navigation_manager.dart';
+import 'package:movie_app/widgets/app_scaffold.dart';
+import 'package:provider/provider.dart';
 
 class MovieCastScreen extends StatefulWidget {
   final int movieId;
@@ -45,27 +47,59 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cast')),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _cast.isEmpty
-              ? const Center(child: Text('No cast information available'))
-              : _buildCastGrid(),
-    );
-  }
-
-  Widget _buildCastGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+    return AppScaffold(
+      currentIndex: Provider.of<NavigationManager>(context).currentIndex,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 120,
+            pinned: true,
+            title: const Text('Cast'),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                final navManager = Provider.of<NavigationManager>(context, listen: false);
+                navManager.exitCast();
+              },
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                child: const Center(
+                  child: Icon(
+                    Icons.people,
+                    size: 60,
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          _isLoading
+              ? const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : _cast.isEmpty
+                  ? const SliverFillRemaining(
+                      child: Center(child: Text('No cast information available')),
+                    )
+                  : SliverPadding(
+                      padding: const EdgeInsets.all(16),
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.7,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _buildCastCard(_cast[index]),
+                          childCount: _cast.length,
+                        ),
+                      ),
+                    ),
+        ],
       ),
-      itemCount: _cast.length,
-      itemBuilder: (context, index) => _buildCastCard(_cast[index]),
     );
   }
 

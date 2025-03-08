@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movie_app/utils/navigation_manager.dart';
+import 'package:provider/provider.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;

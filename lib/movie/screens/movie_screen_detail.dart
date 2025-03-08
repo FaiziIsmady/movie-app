@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:movie_app/api_constants.dart';
+import 'package:movie_app/movie/models/movie.dart';
 import 'package:movie_app/movie/screens/movie_cast.dart';
-import '../models/movie.dart';
-import '../services/movie_service.dart';
-import '../../api_constants.dart';
+import 'package:movie_app/movie/services/movie_service.dart';
+import 'package:movie_app/utils/navigation_manager.dart';
+import 'package:movie_app/widgets/app_scaffold.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetailScreen extends StatefulWidget {
@@ -66,15 +69,24 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
+      currentIndex: Provider.of<NavigationManager>(context).currentIndex,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                final navManager = Provider.of<NavigationManager>(context, listen: false);
+                navManager.goBack();
+              },
+            ),
+            // Add this flexibleSpace property here
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                '${ApiConstants.imageBaseUrl}${widget.movie.backdropPath}',
+                'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
                 fit: BoxFit.cover,
               ),
             ),
@@ -109,15 +121,18 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         'Release Date: ${widget.movie.releaseDate}',
                         style: const TextStyle(fontSize: 16),
                       ),
-                      Text(
-                        'Director: $_director',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ],
                   ),
+                  if (_director != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Director: $_director',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   const Text(
                     'Overview',
@@ -137,12 +152,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MovieCastScreen(movieId: widget.movie.id),
-                            ),
-                          );
+                          Provider.of<NavigationManager>(context, listen: false)
+                            .showMovieCast(widget.movie.id);
                         },
                         child: const Text('Cast'),
                       ),
@@ -194,12 +205,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                               final recommendedMovie = _recommendations[index];
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MovieDetailScreen(movie: recommendedMovie),
-                                    ),
-                                  );
+                                  Provider.of<NavigationManager>(context, listen: false)
+                                      .showMovieDetails(recommendedMovie);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 8),
