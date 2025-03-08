@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:movie_app/profile/services/profile_service.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -22,8 +23,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => NavigationManager(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NavigationManager()),
+        ChangeNotifierProvider(create: (_) => ProfileService()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'ReelsTek',

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:movie_app/profile/models/user_profile.dart';
+import 'package:movie_app/profile/screens/user_review_profile.dart';
 import 'package:movie_app/profile/services/auth_service.dart';
 import 'package:movie_app/profile/services/profile_service.dart';
 import 'package:movie_app/utils/navigation_manager.dart';
@@ -277,6 +278,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+          const SizedBox(height: 16),
+          
+          // Reviews button
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UserReviewProfileScreen(),
+                ),
+              );
+            },
+            child: const Text('My Reviews'),
+          ),
           const SizedBox(height: 16),
           
           // Other details

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/api_constants.dart';
 import 'package:movie_app/movie/models/movie.dart';
 import 'package:movie_app/movie/services/movie_service.dart';
+import 'package:movie_app/profile/screens/user_review_movie.dart';
 import 'package:movie_app/utils/navigation_manager.dart';
 import 'package:movie_app/widgets/app_scaffold.dart';
 import 'package:provider/provider.dart';
@@ -181,6 +182,17 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           }
                         },
                         child: const Text('Trailer'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UserReviewMovieScreen(movieId: widget.movie.id.toString()),
+                            ),
+                          );
+                        },
+                        child: const Text('Add Review'),
                       ),
                     ],
                   ),

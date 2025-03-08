@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:movie_app/profile/models/user_profile.dart';
 import 'package:flutter/foundation.dart';
+import 'package:movie_app/profile/models/user_review.dart';
 
-class ProfileService {
+class ProfileService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   ProfileService() { // Connect to firestore emulator
@@ -115,5 +116,40 @@ class ProfileService {
       print('Error retrieving image from Firestore: $e');
       return null;
     }
+  }
+  Future<void> addReview(Review review) async {
+    await _firestore.collection('reviews').doc(review.id).set(review.toMap());
+  }
+
+  Future<void> updateReview(Review review) async {
+    await _firestore.collection('reviews').doc(review.id).update({
+      'reviewText': review.reviewText,
+      'rating': review.rating,
+      'updatedAt': Timestamp.fromDate(DateTime.now()),
+    });
+  }
+
+  Future<void> deleteReview(String reviewId) async {
+    await _firestore.collection('reviews').doc(reviewId).delete();
+  }
+
+  Future<List<Review>> getUserReviews(String userId) async {
+    final query = await _firestore
+        .collection('reviews')
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .get();
+    
+    return query.docs.map((doc) => Review.fromMap(doc.data(), doc.id)).toList();
+  }
+
+  Future<List<Review>> getMovieReviews(String movieId) async {
+    final query = await _firestore
+        .collection('reviews')
+        .where('movieId', isEqualTo: movieId)
+        .orderBy('createdAt', descending: true)
+        .get();
+    
+    return query.docs.map((doc) => Review.fromMap(doc.data(), doc.id)).toList();
   }
 }
