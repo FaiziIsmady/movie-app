@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/profile/models/user_profile.dart';
 import 'package:movie_app/profile/services/auth_service.dart';
 import 'package:movie_app/profile/services/profile_service.dart';
+import 'package:movie_app/widgets/app_scaffold.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -120,27 +121,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          if (!_isLoading && _userProfile != null && !_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                setState(() {
-                  _isEditing = true;
-                });
-              },
-            ),
-          // Add logout button
+    return AppScaffold(
+      title: 'Profile',
+      currentIndex: 3, // 3 for Profile tab
+      actions: [
+        if (!_isLoading && _userProfile != null && !_isEditing)
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-            tooltip: 'Logout',
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              setState(() {
+                _isEditing = true;
+              });
+            },
           ),
-        ],
-      ),
+        // Add logout button
+        IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: _logout,
+          tooltip: 'Logout',
+        ),
+      ],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _userProfile != null
@@ -148,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : const Center(child: Text('User not found')),
     );
   }
-  
+    
   Widget _buildProfileContent() {
     if (_isEditing) {
       return _buildEditForm();

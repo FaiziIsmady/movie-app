@@ -44,7 +44,7 @@ class AppScaffold extends StatelessWidget {
               screen = const HomeScreen();
               break;
             case 1:
-              screen = const SearchScreen();
+              screen = const ExploreScreen();
               break;
             case 2:
               screen = const FriendActivityScreen();

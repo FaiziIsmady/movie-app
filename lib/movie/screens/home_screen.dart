@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/movie/models/movie.dart';
 import 'package:movie_app/movie/services/movie_service.dart';
+import 'package:movie_app/widgets/app_scaffold.dart';
 import 'package:movie_app/widgets/movie_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -90,18 +91,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ReelsTek'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-            },
-          ),
-        ],
-      ),
+    return AppScaffold(
+      title: 'ReelsTek',
+      currentIndex: 0, // 0 for Movies tab
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () {
+            // Your action here
+          },
+        ),
+      ],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
