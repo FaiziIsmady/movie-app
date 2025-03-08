@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/movie/models/movie.dart';
-import 'package:movie_app/movie/screens/movie_screen_detail.dart';
 import 'package:movie_app/movie/services/movie_service.dart';
+import 'package:movie_app/utils/navigation_manager.dart';
 import 'package:movie_app/widgets/app_scaffold.dart';
+import 'package:provider/provider.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({Key? key}) : super(key: key);
@@ -79,7 +80,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Explore',
-      currentIndex: 1, // 0 for Movies tab
+      currentIndex: Provider.of<NavigationManager>(context).currentIndex,
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -154,12 +155,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           final movie = _movies[index];
                           return GestureDetector(
                             onTap: () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MovieDetailScreen(movie: movie),
-                                ),
-                              ),
+                              Provider.of<NavigationManager>(context, listen: false).showMovieDetails(movie)
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

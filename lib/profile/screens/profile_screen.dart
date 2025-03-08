@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/profile/models/user_profile.dart';
 import 'package:movie_app/profile/services/auth_service.dart';
 import 'package:movie_app/profile/services/profile_service.dart';
+import 'package:movie_app/utils/navigation_manager.dart';
 import 'package:movie_app/widgets/app_scaffold.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -123,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Profile',
-      currentIndex: 3, // 3 for Profile tab
+      currentIndex: Provider.of<NavigationManager>(context).currentIndex,
       actions: [
         if (!_isLoading && _userProfile != null && !_isEditing)
           IconButton(
