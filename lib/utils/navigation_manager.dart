@@ -6,15 +6,16 @@ import 'package:movie_app/movie/screens/movie_screen_detail.dart';
 import 'package:movie_app/social/screens/social_screen.dart';
 import 'package:movie_app/profile/screens/profile_screen.dart';
 import 'package:movie_app/movie/models/movie.dart';
+
 class NavigationManager with ChangeNotifier {
   int _currentIndex = 0;
   Movie? _selectedMovie;
   final List<Movie?> _movieHistory = [];
 
   int? _currentMovieIdForCast;
-  Movie? _movieForCast; // Add this to store the movie for cast
+  Movie? _movieForCast;
   bool _showingCast = false;
-
+  
   int get currentIndex => _currentIndex;
   Movie? get selectedMovie => _selectedMovie;
   bool get showingCast => _showingCast;
@@ -33,7 +34,7 @@ class NavigationManager with ChangeNotifier {
     
     _currentIndex = index;
     _selectedMovie = null;
-    _movieHistory.clear();
+    _movieHistory.clear(); // Clear movie history when changing screens
     notifyListeners();
   }
 
@@ -72,6 +73,11 @@ class NavigationManager with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  // void goToUserReviewProfileScreen() {
+  //   _currentIndex = 3; // Set index to 4 to indicate "My Reviews" screen
+  //   notifyListeners();
+  // }
 
   Widget getCurrentScreen() {
     if (_showingCast && _currentMovieIdForCast != null) {
