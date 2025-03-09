@@ -16,4 +16,16 @@ class UserProfile {
     this.socialMedia = '',
     this.aboutMe = '',
   });
+
+    factory UserProfile.fromMap(Map<String, dynamic> data, String id) {
+    return UserProfile(
+      name: data['name'],
+      email: data['email'],
+      profilePictureUrl: data['profilePictureUrl'] ?? '',
+      nickname: data['nickname'] ?? '',
+      hobbies: data['hobbies'] ?? '',
+      socialMedia: data['socialMedia'] ?? '',
+      aboutMe: data['aboutMe'] ?? '',
+    );
+  }
 }
