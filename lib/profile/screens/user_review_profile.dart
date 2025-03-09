@@ -52,77 +52,101 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      // Pass the current index to maintain the bottom navigation bar
       currentIndex: Provider.of<NavigationManager>(context).currentIndex,
       title: 'My Reviews',
-      body: FutureBuilder<List<Review>>(
-        future: _reviewsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No reviews found'));
-          }
-
-          final reviews = snapshot.data!;
-          return ListView.builder(
-            padding: const EdgeInsets.all(16.0),
-            itemCount: reviews.length,
-            itemBuilder: (context, index) {
-              final review = reviews[index];
-
-              // Fetch movie details (e.g., title and poster)
-              return FutureBuilder<Map<String, String>>(
-                future: _getMovieDetails(review.movieId), // Fetch movie details by movieId
-                builder: (context, movieSnapshot) {
-                  if (movieSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (movieSnapshot.hasError) {
-                    return const Center(child: Text('Error loading movie details'));
-                  } else {
-                    final movieDetails = movieSnapshot.data ?? {'title': 'Unknown Movie', 'posterPath': ''};
-                    return Card(
-                      child: ListTile(
-                        title: Text('Rating: ${review.rating}'),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Movie: ${movieDetails['title']}'),
-                            const SizedBox(height: 4),
-                            Text('Review: ${review.reviewText}'),
-                          ],
-                        ),
-                        leading: movieDetails['posterPath']!.isNotEmpty
-                            ? Image.network(
-                                'https://image.tmdb.org/t/p/w500${movieDetails['posterPath']}',
-                                width: 50,
-                                height: 75,
-                                fit: BoxFit.cover,
-                              )
-                            : const Icon(Icons.movie, size: 50), // Default icon if no poster
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () => _editReview(review),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () => _deleteReview(review.id),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
+      body: Column(
+        children: [
+          // Add back button below the title and above the reviews list
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context); // This will go back to previous screen
                 },
-              );
-            },
-          );
-        },
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Back'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown.shade700,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          // Expanded widget to make reviews section take available space
+          Expanded(
+            child: FutureBuilder<List<Review>>(
+              future: _reviewsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No reviews found'));
+                }
+
+                final reviews = snapshot.data!;
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    final review = reviews[index];
+
+                    // Fetch movie details (e.g., title and poster)
+                    return FutureBuilder<Map<String, String>>(
+                      future: _getMovieDetails(review.movieId), // Fetch movie details by movieId
+                      builder: (context, movieSnapshot) {
+                        if (movieSnapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (movieSnapshot.hasError) {
+                          return const Center(child: Text('Error loading movie details'));
+                        } else {
+                          final movieDetails = movieSnapshot.data ?? {'title': 'Unknown Movie', 'posterPath': ''};
+                          return Card(
+                            child: ListTile(
+                              title: Text('Rating: ${review.rating}'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Movie: ${movieDetails['title']}'),
+                                  const SizedBox(height: 4),
+                                  Text('Review: ${review.reviewText}'),
+                                ],
+                              ),
+                              leading: movieDetails['posterPath']!.isNotEmpty
+                                  ? Image.network(
+                                      'https://image.tmdb.org/t/p/w500${movieDetails['posterPath']}',
+                                      width: 50,
+                                      height: 75,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(Icons.movie, size: 50), // Default icon if no poster
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: () => _editReview(review),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () => _deleteReview(review.id),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
