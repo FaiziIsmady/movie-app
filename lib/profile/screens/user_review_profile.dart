@@ -36,13 +36,12 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
     return profileService.getUserReviews(user.uid);
   }
 
-  // Method to get movie details by movieId
   Future<Map<String, String>> _getMovieDetails(String movieId) async {
     try {
       final movie = await _movieService.getMovieDetails(int.parse(movieId));
       return {
         'title': movie.title,
-        'posterPath': movie.posterPath, // Ensure this is handled in your Movie class
+        'posterPath': movie.posterPath,
       };
     } catch (e) {
       return {'title': 'Unknown Movie', 'posterPath': ''};
@@ -56,14 +55,13 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
       title: 'My Reviews',
       body: Column(
         children: [
-          // Add back button below the title and above the reviews list
           Padding(
             padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
             child: Align(
               alignment: Alignment.topLeft,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pop(context); // This will go back to previous screen
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Back'),
@@ -74,7 +72,6 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
               ),
             ),
           ),
-          // Expanded widget to make reviews section take available space
           Expanded(
             child: FutureBuilder<List<Review>>(
               future: _reviewsFuture,
@@ -94,9 +91,8 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
                   itemBuilder: (context, index) {
                     final review = reviews[index];
 
-                    // Fetch movie details (e.g., title and poster)
                     return FutureBuilder<Map<String, String>>(
-                      future: _getMovieDetails(review.movieId), // Fetch movie details by movieId
+                      future: _getMovieDetails(review.movieId),
                       builder: (context, movieSnapshot) {
                         if (movieSnapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
@@ -122,7 +118,7 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
                                       height: 75,
                                       fit: BoxFit.cover,
                                     )
-                                  : const Icon(Icons.movie, size: 50), // Default icon if no poster
+                                  : const Icon(Icons.movie, size: 50), 
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -158,7 +154,6 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
         builder: (context) => EditReviewScreen(review: review),
       ),
     ).then((_) {
-      // Refresh reviews after editing
       setState(() {
         _reviewsFuture = _loadReviews();
       });
