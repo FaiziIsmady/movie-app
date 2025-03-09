@@ -27,7 +27,7 @@ class MovieCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 '${ApiConstants.imageBaseUrl}${movie.posterPath}',
                 height: 200,
