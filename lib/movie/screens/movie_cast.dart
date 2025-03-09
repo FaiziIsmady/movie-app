@@ -52,7 +52,7 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 120,
+            // Removed expandedHeight to eliminate the gap
             pinned: true,
             title: const Text('Cast'),
             leading: IconButton(
@@ -61,18 +61,6 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
                 final navManager = Provider.of<NavigationManager>(context, listen: false);
                 navManager.exitCast();
               },
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                color: Theme.of(context).primaryColor.withOpacity(0.2),
-                child: const Center(
-                  child: Icon(
-                    Icons.people,
-                    size: 60,
-                    color: Colors.white70,
-                  ),
-                ),
-              ),
             ),
           ),
           _isLoading
@@ -84,13 +72,14 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
                       child: Center(child: Text('No cast information available')),
                     )
                   : SliverPadding(
-                      padding: const EdgeInsets.all(16),
+                      // Reduced top padding to minimize gap
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
                       sliver: SliverGrid(
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 0.7,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) => _buildCastCard(_cast[index]),
@@ -106,43 +95,40 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
   Widget _buildCastCard(Map<String, dynamic> actor) {
     final profilePath = actor['profile_path'];
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      margin: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            flex: 3,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: _buildProfileImage(profilePath),
-            ),
+            flex: 4,
+            child: _buildProfileImage(profilePath),
           ),
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    actor['name'] ?? 'Unknown',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  actor['name'] ?? 'Unknown',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    actor['character'] ?? 'Unknown role',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  actor['character'] ?? 'Unknown role',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],
@@ -155,7 +141,12 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
       return CachedNetworkImage(
         imageUrl: '${ApiConstants.imageBaseUrl}$profilePath',
         fit: BoxFit.cover,
-        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+        placeholder: (context, url) => Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
         errorWidget: (context, url, error) => _buildDefaultProfileIcon(),
       );
     }
@@ -164,7 +155,7 @@ class _MovieCastScreenState extends State<MovieCastScreen> {
 
   Widget _buildDefaultProfileIcon() {
     return Container(
-      color: Colors.grey[300],
+      color: Colors.grey[200],
       child: const Icon(Icons.person, size: 50, color: Colors.grey),
     );
   }
