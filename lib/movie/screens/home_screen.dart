@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Movie> _trendingMovies = [];
   List<Movie> _nowPlayingMovies = [];
   List<Movie> _topRatedMovies = [];
+  List<Movie> _upcomingMovies = [];
   bool _isLoading = true;
 
   @override
@@ -31,12 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final trending = await _movieService.getTrendingMovies();
       final nowPlaying = await _movieService.getNowPlayingMovies();
       final topRated = await _movieService.getTopRatedMovies();
+      final upcoming = await _movieService.getUpcomingMovies();
 
       setState(() {
         _popularMovies = popular;
         _trendingMovies = trending;
         _nowPlayingMovies = nowPlaying;
         _topRatedMovies = topRated;
+        _upcomingMovies = upcoming;
         _isLoading = false;
       });
     } catch (e) {
@@ -69,16 +72,18 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 300,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: movies.length,
+            itemCount: movies.length * 4,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemBuilder: (context, index) {
+              final movie = movies[index % movies.length]; // Use modulo to cycle through the list
               return SizedBox(
                 width: 180,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16),
                   child: MovieCard(
-                    movie: movies[index],
+                    movie: movie, 
                     onTap: () {
+                      // Your action here
                     },
                   ),
                 ),
@@ -109,11 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
               onRefresh: _loadMovies,
               child: ListView(
                 children: [
-                  _buildMovieSection('Popular Movies', _popularMovies),
+                  _buildMovieSection('Now Playing', _nowPlayingMovies),
                   const SizedBox(height: 16),
                   _buildMovieSection('Trending This Week', _trendingMovies),
                   const SizedBox(height: 16),
-                  _buildMovieSection('Now Playing', _nowPlayingMovies),
+                  _buildMovieSection('Popular Movies', _popularMovies),
+                  const SizedBox(height: 16),
+                  _buildMovieSection('Upcoming Movies', _upcomingMovies),
                   const SizedBox(height: 16),
                   _buildMovieSection('Top Rated', _topRatedMovies),
                 ],

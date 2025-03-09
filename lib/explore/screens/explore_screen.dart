@@ -161,12 +161,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
+                                  child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12), 
                                   child: Image.network(
                                     'https://image.tmdb.org/t/p/w500${movie.posterPath}',
                                     fit: BoxFit.cover,
+                                    height: 300,
                                   ),
                                 ),
-                                Text(movie.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                ),
                               ],
                             ),
                           );
