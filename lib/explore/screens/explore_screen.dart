@@ -81,14 +81,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return AppScaffold(
       title: 'Explore',
       currentIndex: Provider.of<NavigationManager>(context).currentIndex,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            // Your action here
-          },
-        ),
-      ],
       body: Column(
         children: [
           // Search Bar

@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         title: 'ReelsTek',
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Colors.brown,
+          scaffoldBackgroundColor: Colors.deepPurple[50],
           useMaterial3: true,
         ),
         home: StreamBuilder<User?>(

@@ -291,6 +291,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               );
             },
+            style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple.shade700,
+                          foregroundColor: Colors.white,
+                        ),
             child: const Text('My Reviews'),
           ),
           const SizedBox(height: 16),
@@ -433,6 +437,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Save button
           ElevatedButton(
             onPressed: _isLoading ? null : _saveProfile,
+            style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple.shade700,
+                          foregroundColor: Colors.white,
+                        ),
             child: _isLoading
                 ? const SizedBox(
                     height: 20,

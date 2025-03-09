@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/profile/models/user_review.dart';
 import 'package:movie_app/profile/screens/edit_review_screen.dart';
 import 'package:movie_app/profile/services/profile_service.dart';
-import 'package:movie_app/movie/services/movie_service.dart'; // Import MovieService
+import 'package:movie_app/movie/services/movie_service.dart';
 import 'package:movie_app/utils/navigation_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:movie_app/widgets/app_scaffold.dart'; // Make sure to import AppScaffold
+import 'package:movie_app/widgets/app_scaffold.dart';
 
 class UserReviewProfileScreen extends StatefulWidget {
   const UserReviewProfileScreen({Key? key}) : super(key: key);
@@ -64,9 +64,9 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Back'),
+                label: const Text(''),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown.shade700,
+                  backgroundColor: Colors.purple.shade700,
                   foregroundColor: Colors.white,
                 ),
               ),

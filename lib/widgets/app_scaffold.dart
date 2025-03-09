@@ -28,7 +28,16 @@ class AppScaffold extends StatelessWidget {
     return Scaffold(
       appBar: title.isNotEmpty
           ? AppBar(
-              title: Text(title),
+              title: Container(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black, // Set the text color
+                  ),
+                ),
+              ),
               automaticallyImplyLeading: showBackButton,
               leading: showBackButton 
                 ? IconButton(

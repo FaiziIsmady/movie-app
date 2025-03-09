@@ -100,14 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppScaffold(
       title: 'ReelsTek',
       currentIndex: 0, // 0 for Movies tab
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.person),
-          onPressed: () {
-            // Your action here
-          },
-        ),
-      ],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(

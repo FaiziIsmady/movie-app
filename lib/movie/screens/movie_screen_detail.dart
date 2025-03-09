@@ -83,7 +83,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 navManager.goBack();
               },
             ),
-            // Add this flexibleSpace property here
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
                 'https://image.tmdb.org/t/p/w500${widget.movie.backdropPath}',
@@ -155,6 +154,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           Provider.of<NavigationManager>(context, listen: false)
                             .showMovieCast(widget.movie.id);
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple.shade700,
+                          foregroundColor: Colors.white,
+                        ),
                         child: const Text('Cast'),
                       ),
                       ElevatedButton(
@@ -181,6 +184,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             );
                           }
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple.shade700,
+                          foregroundColor: Colors.white,
+                        ),
                         child: const Text('Trailer'),
                       ),
                       ElevatedButton(
@@ -192,6 +199,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             ),
                           );
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple.shade700,
+                          foregroundColor: Colors.white,
+                        ),
                         child: const Text('Add Review'),
                       ),
                     ],
