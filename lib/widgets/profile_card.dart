@@ -16,9 +16,19 @@ class ProfileCard extends StatelessWidget {
           backgroundImage: NetworkImage(userProfile.profilePictureUrl),
         ),
         title: Text(userProfile.name),
-        subtitle: Text(userProfile.email),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(userProfile.email),
+            const SizedBox(height: 4),
+            Text(
+              'About Me: ${userProfile.aboutMe.isNotEmpty ? userProfile.aboutMe : 'No information provided'}',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+          ],
+        ),
         onTap: () {
-          // Show user profile details (not implemented yet)
+          // Show user profile details (not implemented)
         },
       ),
     );
