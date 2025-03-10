@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:movie_app/profile/models/user_profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:movie_app/profile/models/user_review.dart';
@@ -8,42 +9,55 @@ import 'package:movie_app/profile/models/user_review.dart';
 class ProfileService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  ProfileService() { // Connect to firestore emulator
-    _firestore.useFirestoreEmulator('localhost', 8080);
-  }
+  // ProfileService() { // Connect to firestore emulator
+  //   _firestore.useFirestoreEmulator('localhost', 8080);
+  // }
 
   Future<UserProfile> getUserProfile(userId) async {
     if (userId == null) {
       throw Exception('User not logged in');
     }
 
-    final doc = await _firestore.collection('users').doc(userId).get();
-    if (doc.exists) {
-      final data = doc.data()!;
-      String profilePictureUrl = data['profilePictureUrl'] ?? '';
-      
-      // Check if it's a Firestore reference
-      if (profilePictureUrl.startsWith('firestore://')) {
-        // Retrieve the actual image data
-        final imageData = await getProfileImageFromFirestore(userId);
-        if (imageData != null) {
-          profilePictureUrl = imageData;
+    try {
+      // Get the current user's email if available
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final email = currentUser?.email;
+
+      // Ensure document exists before trying to read it
+      await ensureUserDocumentExists(userId, email);
+
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (doc.exists) {
+        final data = doc.data()!;
+        String profilePictureUrl = data['profilePictureUrl'] ?? '';
+
+        // Check if it's a Firestore reference
+        if (profilePictureUrl.startsWith('firestore://')) {
+          // Retrieve image data
+          final imageData = await getProfileImageFromFirestore(userId);
+          if (imageData != null) {
+            profilePictureUrl = imageData;
+          }
         }
+
+        return UserProfile(
+          name: data['name'] ?? '',
+          email: data['email'] ?? '',
+          profilePictureUrl: profilePictureUrl,
+          nickname: data['nickname'] ?? '',
+          hobbies: data['hobbies'] ?? '',
+          socialMedia: data['socialMedia'] ?? '',
+          aboutMe: data['aboutMe'] ?? '',
+        );
+      } else {
+        throw Exception('User document not found even after creation attempt');
       }
-      
-      return UserProfile(
-        name: data['name'] ?? '',
-        email: data['email'] ?? '',
-        profilePictureUrl: profilePictureUrl,
-        nickname: data['nickname'] ?? '',
-        hobbies: data['hobbies'] ?? '',
-        socialMedia: data['socialMedia'] ?? '',
-        aboutMe: data['aboutMe'] ?? '',
-      );
-    } else {
-      throw Exception('User not found');
+    } catch (e) {
+      print("Error in getUserProfile: $e");
+      throw Exception('Failed to load user profile: $e');
     }
   }
+
 
   Future<void> updateUserProfile(UserProfile profile, String userId) async {
     await _firestore.collection('users').doc(userId).set({
@@ -70,7 +84,7 @@ class ProfileService extends ChangeNotifier {
     try {
       print('Converting image to Base64');
       
-      // Compress the image to reduce size
+      // Compress the image
       final compressedBytes = await compute(_compressImage, imageBytes);
       
       // Convert to Base64
@@ -99,8 +113,6 @@ class ProfileService extends ChangeNotifier {
   
   // Method to compress image (run in isolate)
   static Uint8List _compressImage(Uint8List bytes) {
-    // Simple compression - in a real app, use a proper image compression library
-    // This is a placeholder that just returns the original bytes
     return bytes;
   }
   
@@ -151,5 +163,32 @@ class ProfileService extends ChangeNotifier {
         .get();
     
     return query.docs.map((doc) => Review.fromMap(doc.data(), doc.id)).toList();
+  }
+
+  Future<void> ensureUserDocumentExists(String userId, String? email) async {
+    try {
+      // Check if document exists
+      final docSnapshot = await _firestore.collection('users').doc(userId).get();
+      
+      // If document doesn't exist, create it
+      if (!docSnapshot.exists) {
+        print("Creating missing user document for user: $userId");
+        
+        await _firestore.collection('users').doc(userId).set({
+          'uid': userId,
+          'email': email ?? '',
+          'name': '',
+          'profilePictureUrl': '',
+          'nickname': '',
+          'hobbies': '',
+          'socialMedia': '',
+          'aboutMe': '',
+        });
+        
+        print("User document created successfully");
+      }
+    } catch (e) {
+      print("Error ensuring user document exists: $e");
+    }
   }
 }

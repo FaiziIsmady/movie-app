@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/profile/services/auth_service.dart';
+import 'package:movie_app/utils/auth_state_provider.dart';
+import 'package:provider/provider.dart';
 import 'register_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
+  Future<void> _saveLoginState(bool isLoggedIn) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', isLoggedIn);  // Save login state
+  }
+
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -30,29 +39,32 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final user = await _authService.signIn(
-        _emailController.text.trim(),
+      User? user = await _authService.signIn(
+        _emailController.text,
         _passwordController.text,
       );
-      
-      if (user == null && mounted) {
+
+      if (user != null) {
+        // Set SharedPreferences login state to true
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userEmail', _emailController.text);
+        
+        // Notify the auth provider that login state has changed
+        Provider.of<AuthStateProvider>(context, listen: false).refreshAuthState();
+      } else {
         setState(() {
-          _errorMessage = 'Invalid email or password';
+          _errorMessage = 'Invalid credentials';
         });
       }
-      // No need to navigate - main.dart handles this via auth state
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'An error occurred. Please try again.';
-        });
-      }
+      setState(() {
+        _errorMessage = 'An error occurred: ${e.toString()}';
+      });
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -60,8 +72,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login to ReelsTek'),
+        title: const Text(
+          'Login to ReelsTek',
+          style: TextStyle(
+            color: Colors.white, // Set the text color to white
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.black,
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -136,6 +155,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.grey[850],
+                  foregroundColor: Colors.white,
                 ),
                 child: _isLoading
                     ? const SizedBox(

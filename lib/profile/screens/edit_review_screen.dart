@@ -66,6 +66,11 @@ class _EditReviewScreenState extends State<EditReviewScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _updateReview,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.grey[850],
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Update Review'),
               ),
             ],

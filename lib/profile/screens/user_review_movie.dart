@@ -28,7 +28,7 @@ class _UserReviewMovieScreenState extends State<UserReviewMovieScreen> {
     _movieDetailsFuture = _fetchMovieDetails(widget.movieId);
   }
 
-  // Fetch movie details (including poster)
+  // Fetch movie details
   Future<Map<String, String>> _fetchMovieDetails(String movieId) async {
     try {
       final movie = await MovieService().getMovieDetails(int.parse(movieId));
@@ -114,8 +114,11 @@ class _UserReviewMovieScreenState extends State<UserReviewMovieScreen> {
               },
             ),
             const SizedBox(height: 16),
-            // Submit button
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[850],
+                          foregroundColor: Colors.white,
+                        ),
               onPressed: _isSubmitting ? null : _submitReview,
               child: _isSubmitting
                   ? const SizedBox(
