@@ -72,7 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         title: const Text(
           'Create Account',
           style: TextStyle(
-            color: Colors.white, // Set the text color to white
+            color: Colors.white,
           ),
         ),
         

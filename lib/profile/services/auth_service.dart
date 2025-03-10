@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movie_app/profile/services/profile_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  AuthService() {
-    // Connect to emulator
-    _auth.useAuthEmulator('localhost', 9099);
-    _firestore.useFirestoreEmulator('localhost', 8080);
-  }
+  // AuthService() {
+  //   // Connect to emulator
+  //   _auth.useAuthEmulator('localhost', 9099);
+  //   _firestore.useFirestoreEmulator('localhost', 8080);
+  // }
 
   Future<User?> signIn(String email, String password) async {
     try {
@@ -22,6 +23,14 @@ class AuthService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
       await prefs.setString('userEmail', email);
+      
+      // Ensure user document exists
+      final profileService = ProfileService();
+      await profileService.ensureUserDocumentExists(
+        userCredential.user!.uid, 
+        userCredential.user!.email
+      );
+      
       return userCredential.user;
     } catch (e) {
       // Clear login state on failure
