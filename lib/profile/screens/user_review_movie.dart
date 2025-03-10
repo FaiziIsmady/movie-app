@@ -116,7 +116,7 @@ class _UserReviewMovieScreenState extends State<UserReviewMovieScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple.shade700,
+                          backgroundColor: Colors.grey[850],
                           foregroundColor: Colors.white,
                         ),
               onPressed: _isSubmitting ? null : _submitReview,

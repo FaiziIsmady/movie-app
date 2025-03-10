@@ -155,7 +155,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             .showMovieCast(widget.movie.id);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple.shade700,
+                          backgroundColor: Colors.grey[850],
                           foregroundColor: Colors.white,
                         ),
                         child: const Text('Cast'),
@@ -185,7 +185,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple.shade700,
+                          backgroundColor: Colors.grey[850],
                           foregroundColor: Colors.white,
                         ),
                         child: const Text('Trailer'),
@@ -200,7 +200,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple.shade700,
+                          backgroundColor: Colors.grey[850],
                           foregroundColor: Colors.white,
                         ),
                         child: const Text('Add Review'),

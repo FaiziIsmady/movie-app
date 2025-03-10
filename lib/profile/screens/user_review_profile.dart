@@ -66,7 +66,7 @@ class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
                 icon: const Icon(Icons.arrow_back),
                 label: const Text(''),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple.shade700,
+                  backgroundColor: Colors.grey[850],
                   foregroundColor: Colors.white,
                 ),
               ),

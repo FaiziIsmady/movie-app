@@ -68,7 +68,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account'),
+        backgroundColor: Colors.black,
+        title: const Text(
+          'Create Account',
+          style: TextStyle(
+            color: Colors.white, // Set the text color to white
+          ),
+        ),
+        
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -162,7 +169,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _register,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple.shade700,
+                  backgroundColor: Colors.grey[850],
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -176,7 +183,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       )
                     : const Text(
                         'Create Account',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          color: Colors.white, fontSize: 16
+                          ),
                       ),
               ),
               const SizedBox(height: 16),

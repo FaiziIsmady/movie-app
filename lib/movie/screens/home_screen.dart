@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: MovieCard(
                     movie: movie, 
                     onTap: () {
-                      // Your action here
+                    
                     },
                   ),
                 ),

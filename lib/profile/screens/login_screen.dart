@@ -72,8 +72,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login to ReelsTek'),
+        title: const Text(
+          'Login to ReelsTek',
+          style: TextStyle(
+            color: Colors.white, // Set the text color to white
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.black,
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -148,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.purple.shade700,
+                  backgroundColor: Colors.grey[850],
                   foregroundColor: Colors.white,
                 ),
                 child: _isLoading
