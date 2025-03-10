@@ -34,7 +34,7 @@ class AppScaffold extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
-                    color: Colors.black, // Set the text color
+                    color: Colors.black,
                   ),
                 ),
               ),

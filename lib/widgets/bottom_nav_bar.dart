@@ -31,11 +31,13 @@ class BottomNavBar extends StatelessWidget {
           label: 'Profile',
         ),
       ],
+
+      // Bottom navbar properties
       currentIndex: selectedIndex,
       onTap: onItemTapped,
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true, // Show labels for unselected items
+      showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
     );

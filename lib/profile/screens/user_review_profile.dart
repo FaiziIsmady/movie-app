@@ -18,7 +18,7 @@ class UserReviewProfileScreen extends StatefulWidget {
 
 class _UserReviewProfileScreenState extends State<UserReviewProfileScreen> {
   late Future<List<Review>> _reviewsFuture;
-  final MovieService _movieService = MovieService(); // Initialize movie service
+  final MovieService _movieService = MovieService();
 
   @override
   void initState() {

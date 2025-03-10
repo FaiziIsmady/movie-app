@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:movie_app/profile/services/profile_service.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'utils/navigation_manager.dart';
 import 'profile/screens/login_screen.dart';
+import 'utils/auth_state_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   ); // Initialize Firebase
 
-  await SharedPreferences.getInstance(); // Retrieve sharedpreferences data
+  await SharedPreferences.getInstance(); // Initialize SharedPreferences
 
   runApp(const MyApp());
 }
@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationManager()),
         ChangeNotifierProvider(create: (_) => ProfileService()),
+        ChangeNotifierProvider(create: (_) => AuthStateProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -40,48 +41,30 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.deepPurple[50],
           useMaterial3: true,
         ),
-        home: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+        home: Consumer<AuthStateProvider>(
+          builder: (context, authProvider, _) {
+            // Show loading indicator while checking initial state
+            if (authProvider.isLoading) {
               return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
+                body: Center(child: CircularProgressIndicator()),
               );
             }
             
-            if (snapshot.hasData) {
-              // Firebase Auth state shows user is logged in
-              return FutureBuilder<bool>(
-                future: _checkLoginState(),
-                builder: (context, stateSnapshot) {
-                  if (stateSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  // Use NavigationManager to load the appropriate screen based on current user login state
-                  return Consumer<NavigationManager>(
-                    builder: (context, navManager, _) {
-                      return Scaffold(
-                        body: navManager.getCurrentScreen(), // NavigationManager controls which screen is shown
-                      );
-                    },
+            // Redirect based on login state
+            if (authProvider.isLoggedIn) {
+              return Consumer<NavigationManager>(
+                builder: (context, navManager, _) {
+                  return Scaffold(
+                    body: navManager.getCurrentScreen(),
                   );
                 },
               );
             } else {
-              // User is logged out, show login screen
               return const LoginScreen();
             }
           },
         ),
       ),
     );
-  }
-  Future<bool> _checkLoginState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    return isLoggedIn;
   }
 }

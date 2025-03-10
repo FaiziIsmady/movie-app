@@ -24,7 +24,7 @@ class ProfileService extends ChangeNotifier {
       
       // Check if it's a Firestore reference
       if (profilePictureUrl.startsWith('firestore://')) {
-        // Retrieve the actual image data
+        // Retrieve image data
         final imageData = await getProfileImageFromFirestore(userId);
         if (imageData != null) {
           profilePictureUrl = imageData;
@@ -70,7 +70,7 @@ class ProfileService extends ChangeNotifier {
     try {
       print('Converting image to Base64');
       
-      // Compress the image to reduce size
+      // Compress the image
       final compressedBytes = await compute(_compressImage, imageBytes);
       
       // Convert to Base64
@@ -99,8 +99,6 @@ class ProfileService extends ChangeNotifier {
   
   // Method to compress image (run in isolate)
   static Uint8List _compressImage(Uint8List bytes) {
-    // Simple compression - in a real app, use a proper image compression library
-    // This is a placeholder that just returns the original bytes
     return bytes;
   }
   

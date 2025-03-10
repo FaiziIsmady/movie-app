@@ -28,7 +28,7 @@ class _UserReviewMovieScreenState extends State<UserReviewMovieScreen> {
     _movieDetailsFuture = _fetchMovieDetails(widget.movieId);
   }
 
-  // Fetch movie details (including poster)
+  // Fetch movie details
   Future<Map<String, String>> _fetchMovieDetails(String movieId) async {
     try {
       final movie = await MovieService().getMovieDetails(int.parse(movieId));

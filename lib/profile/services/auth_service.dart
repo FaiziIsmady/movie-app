@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -17,9 +18,15 @@ class AuthService {
         email: email,
         password: password,
       );
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('userEmail', email);
       return userCredential.user;
     } catch (e) {
-      // Handle error
+      // Clear login state on failure
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', false);
       return null;
     }
   }
@@ -43,16 +50,24 @@ class AuthService {
           'socialMedia': '',
           'aboutMe': '',
         });
+        // Save login state to SharedPreferences after successful registration
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userEmail', email);
       }
 
       return user;
     } catch (e) {
-      // Handle error
       return null;
     }
   }
 
   Future<void> signOut() async {
     await _auth.signOut();
+
+    // Clear login state in SharedPreferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+    await prefs.remove('userEmail');
   }
 }

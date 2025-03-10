@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       
       await _profileService.updateUserProfile(updatedProfile, user.uid);
       
-      // If we uploaded a new image, we need to get the actual image data for display
+      // If a new image is uploaded, we need to get the actual image data for display
       if (_image != null) {
         final imageData = await _profileService.getProfileImageFromFirestore(user.uid);
         if (imageData != null) {
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _logout() async {
     try {
       await _authService.signOut();
-      // No need to navigate - main.dart handles this via auth state
+      // No need to navigate since main.dart handles this via auth state
     } catch (e) {
       print('Error signing out: $e');
       ScaffoldMessenger.of(context).showSnackBar(
