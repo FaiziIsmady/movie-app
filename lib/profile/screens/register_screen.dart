@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/profile/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -21,6 +22,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
+  Future<void> _saveLoginState(bool isLoggedIn) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', isLoggedIn);
+  }
+
   void _register() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -39,6 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           _errorMessage = 'Failed to create account. Email might be already in use.';
         });
+      } else {
+        _saveLoginState(true); // Save login state after successful registration
       }
       // main.dart handles via auth state
     } catch (e) {
